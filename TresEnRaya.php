@@ -33,7 +33,7 @@ function comprobarVictoria($campo,$tipo,$fila,$columna):bool
     return $vuelta;
 }
 $ronda = 0;
-$valido = true;
+$valido = false;
 function pintarTablero($mapa){
     echo   "\n
     +-----+-----+-----+
@@ -50,29 +50,34 @@ do {
     pintarTablero($mapa);
     echo $turno == 0 ? "Turno del jugador:X" : "Turno del jugador:O";
     echo "\n";
-    
+    //pido las variables por teclado y las guardo en $i y en $j
     fscanf(STDIN,"%d %d", $i,$j);
-    if ($j < 3 && $j >= 0 && $i < 3 && $i >= 0 && $mapa[$i][$j] == " ") {
+    if ($j < 3 && $j >= 0 && $i < 3 && $i >= 0 && !is_null($i) && !is_null($j) && $mapa[$i][$j] == " ") {
         
         $turno == 0 ? $mapa[$i][$j] = "X" : $mapa[$i][$j] = "O";
         $letra = $turno == 0 ? "X" : "O";
         //echo "Alguien ha ganado? -> ".comprobarVictoria($mapa,$letra);
-        $ganado = comprobarVictoria($mapa,$letra,$i,$j);
-        $ganado ? $valido = false : $valido = true;
+        $valido = comprobarVictoria($mapa,$letra,$i,$j);
         /**
          * Cambio el turno para que juegue el rival contrario
          * 0 = X
          * 1 = O
          */
-        $turno = $turno == 0? 1 : 0;
+        $turno = $turno == 0 ? 1 : 0;
         $ronda++;
     }
-    if ($ganado) {
+    //Si se ha ganado la partida ponemos por pantalla el tablero y quién ha ganado
+    if ($valido) {
         pintarTablero($mapa);
-        echo "Ha ganado el jugador $letra";
+        echo "Ha ganado el jugador: $letra";
+
+    //si se llega a la última ronda se pinta el tablero, se sale del do while y se acaba el juego en empate
     }else if ($ronda == 9) {
         pintarTablero($mapa);
         echo "Empate!";
-        $valido = false;
+        $valido = true;
     }
-} while ($valido);
+    //reinicio valores para no tener problemas con números anteriores.
+    $i = null;
+    $j = null;
+} while ($valido == false);
